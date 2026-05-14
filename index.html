@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Travel Wishlist ✈️</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0c0c0c;
+      --surface: #161616;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --text: #f0ece4;
+      --muted: #6b6760;
+      --radius: 18px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 100px 24px 70px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      margin-bottom: 20px;
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 6px 18px;
+      border-radius: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: normal;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+
+    .stat { text-align: center; }
+
+    .stat-n {
+      font-size: 2.4rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-l {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── FILTERS ── */
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 32px 20px 8px;
+      flex-wrap: wrap;
+    }
+
+    .f-btn {
+      padding: 9px 26px;
+      border-radius: 30px;
+      border: 1px solid;
+      background: transparent;
+      font-size: 0.78rem;
+      font-family: inherit;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .f-btn.f-all  { border-color: rgba(240,236,228,0.25); color: rgba(240,236,228,0.5); }
+    .f-btn.f-reg  { border-color: rgba(100,180,255,0.4);  color: rgba(100,180,255,0.7); }
+    .f-btn.f-lux  { border-color: rgba(201,168,76,0.5);   color: var(--gold); }
+
+    .f-btn.active.f-all { background: var(--text); border-color: var(--text); color: var(--bg); }
+    .f-btn.active.f-reg { background: #64b4ff;     border-color: #64b4ff;     color: #0c0c0c; }
+    .f-btn.active.f-lux { background: var(--gold); border-color: var(--gold); color: #0c0c0c; }
+
+    /* ── SECTION DIVIDERS ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 40px 40px 16px;
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    .section-divider-line {
+      flex: 1;
+      height: 1px;
+    }
+
+    .section-divider.regular .section-divider-line { background: rgba(100,180,255,0.2); }
+    .section-divider.luxury  .section-divider-line { background: rgba(201,168,76,0.3); }
+
+    .section-divider-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      white-space: nowrap;
+    }
+
+    .section-divider.regular .section-divider-label { color: rgba(100,180,255,0.6); }
+    .section-divider.luxury  .section-divider-label { color: var(--gold); }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 0 40px 16px;
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    /* ── CARD ── */
+    .card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      aspect-ratio: 3/4;
+      background: var(--surface);
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(.22,.68,0,1);
+      display: block;
+    }
+
+    .card:hover .card-img { transform: scale(1.06); }
+
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        rgba(0,0,0,0.3) 55%,
+        rgba(0,0,0,0.88) 80%,
+        rgba(0,0,0,0.96) 100%
+      );
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 22px;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-family: 'Georgia', serif;
+      font-weight: bold;
+    }
+
+    .card-badge.regular { background: rgba(100,180,255,0.85); color: #0c0c0c; }
+    .card-badge.luxury  { background: var(--gold); color: #0c0c0c; }
+
+    .check-btn {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 3;
+      color: white;
+    }
+
+    .check-btn:hover { transform: scale(1.15); }
+    .check-btn.done  { background: rgba(60,180,80,0.75); }
+
+    .card-country {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 5px;
+    }
+
+    .card-name {
+      font-size: 1.65rem;
+      font-weight: normal;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .budget-dots {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 10px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .dot.off { background: rgba(255,255,255,0.12); }
+
+    .card-tags {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.6rem;
+      padding: 3px 9px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .card.visited::after {
+      content: '✓ On the list!';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(50,160,70,0.18);
+      border-radius: var(--radius);
+      border: 2px solid rgba(60,200,80,0.35);
+      font-size: 1rem;
+      color: rgba(255,255,255,0.9);
+      pointer-events: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: #141414;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 22px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.32s cubic-bezier(.22,.68,0,1.2);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+
+    .overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-photo {
+      position: relative;
+      height: 280px;
+      overflow: hidden;
+      border-radius: 22px 22px 0 0;
+    }
+
+    .modal-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-photo-grad {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(transparent, rgba(20,20,20,0.9));
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      z-index: 1;
+    }
+
+    .modal-close:hover { background: rgba(0,0,0,0.8); }
+
+    .modal-body { padding: 26px 30px 34px; }
+
+    .modal-flag { font-size: 2.2rem; margin-bottom: 8px; line-height: 1; }
+
+    .modal-title {
+      font-size: 2.1rem;
+      font-weight: normal;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .modal-country {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-desc {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: rgba(240,236,228,0.78);
+      margin-bottom: 24px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .info-block {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .info-block-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .info-block-value {
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: rgba(240,236,228,0.9);
+    }
+
+    .highlights-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .highlights {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .highlights li {
+      display: flex;
+      gap: 12px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: rgba(240,236,228,0.8);
+    }
+
+    .highlights li::before {
+      content: '→';
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 60px 20px 40px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    footer span { color: var(--gold); }
+
+    /* ── HIDDEN ── */
+    .card.hidden { display: none !important; }
+    .section-hidden { display: none !important; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+        padding: 0 14px 12px;
+        gap: 12px;
+      }
+      .section-divider { padding: 28px 16px 10px; }
+      .card-name { font-size: 1.15rem; }
+      .card-tags { display: none; }
+      .hero { padding: 70px 20px 50px; }
+      .stats-row { gap: 28px; }
+      .modal-body { padding: 20px 20px 28px; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 420px) {
+      .grid { grid-template-columns: 1fr; }
+      .card { aspect-ratio: 4/3; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-eyebrow">Travel Wishlist</div>
+    <h1>Places to Go</h1>
+    <div class="hero-sub">Our destinations · The plan</div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-n" id="total-n">14</div>
+        <div class="stat-l">Destinations</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="checked-n">0</div>
+        <div class="stat-l">On the list</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">2</div>
+        <div class="stat-l">Luxury dreams</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="f-btn f-all active" onclick="setFilter('all', this)">All</button>
+    <button class="f-btn f-reg" onclick="setFilter('regular', this)">Regular Trips</button>
+    <button class="f-btn f-lux" onclick="setFilter('luxury', this)">✦ Luxury Dreams</button>
+  </div>
+
+  <!-- REGULAR SECTION -->
+  <div class="section-divider regular" id="div-regular">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">✈ Regular Trips</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="grid" id="grid-regular"></div>
+
+  <!-- LUXURY SECTION -->
+  <div class="section-divider luxury" id="div-luxury">
+    <div class="section-divider-line"></div>
+    <div class="section-divider-label">✦ Luxury Dreams</div>
+    <div class="section-divider-line"></div>
+  </div>
+  <div class="grid" id="grid-luxury"></div>
+
+  <!-- MODAL -->
+  <div class="overlay" id="overlay" onclick="maybeClose(event)">
+    <div class="modal" id="modal">
+      <div class="modal-photo">
+        <img id="m-img" src="" alt="">
+        <div class="modal-photo-grad"></div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="m-flag" class="modal-flag"></div>
+        <h2 id="m-title" class="modal-title"></h2>
+        <div id="m-country" class="modal-country"></div>
+        <p id="m-desc" class="modal-desc"></p>
+        <div class="info-grid">
+          <div class="info-block">
+            <div class="info-block-label">Budget</div>
+            <div id="m-budget" class="info-block-value"></div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-label">Best Time to Go</div>
+            <div id="m-time" class="info-block-value"></div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-label">Vibe</div>
+            <div id="m-vibe" class="info-block-value"></div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-label">Don't Miss</div>
+            <div id="m-miss" class="info-block-value"></div>
+          </div>
+        </div>
+        <div class="highlights-label">Highlights</div>
+        <ul class="highlights" id="m-highlights"></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>Made with wanderlust · <span>✈</span> · Save your favourites with the heart</footer>
+
+  <script>
+    const data = [
+      {
+        id: 'madeira', name: 'Madeira', country: 'Portugal', flag: '🇵🇹', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1548681528-6a5c45b66b42?w=900&q=85&auto=format&fit=crop',
+        tags: ['Nature', 'Hiking', 'Island'],
+        budget: 2, budgetLabel: '€€ — Moderate',
+        desc: 'An island of eternal spring floating in the Atlantic. Volcanic, dramatic, and impossibly lush — levada walks carved into cliffs that drop straight into the ocean. Portugal\'s best-kept secret.',
+        time: 'Apr – Oct',
+        vibe: 'Nature & Drama',
+        miss: 'Ponta de São Lourenço',
+        highlights: [
+          'Levada trails through ancient laurisilva cloud forest',
+          'Cabo Girão — one of Europe\'s highest sea cliffs',
+          'Poncha (local firewater) in a hilltop bar',
+          'Toboggan ride down the hill from Monte village',
+          'Seafood at Funchal\'s Mercado dos Lavradores'
+        ]
+      },
+      {
+        id: 'tenerife', name: 'Tenerife', country: 'Spain', flag: '🇪🇸', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1529907686050-7d8f9793b8f2?w=900&q=85&auto=format&fit=crop',
+        tags: ['Volcano', 'Beach', 'Year-round'],
+        budget: 2, budgetLabel: '€€ — Moderate',
+        desc: 'Spain\'s most dramatic island. Mount Teide looms over black sand beaches while the north stays green and misty. The contrast is wild — and the sun is guaranteed year-round.',
+        time: 'Year-round',
+        vibe: 'Sun + Adventure',
+        miss: 'Teide at sunrise',
+        highlights: [
+          'Hike (or cable car) Mount Teide — Spain\'s highest peak',
+          'Masca Gorge trek down to a secret beach',
+          'Los Gigantes cliffs by boat at sunset',
+          'Siam Park water park — genuinely world-class',
+          'Black sand beaches of Playa Jardín in the north'
+        ]
+      },
+      {
+        id: 'china', name: 'China', country: 'China', flag: '🇨🇳', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1508804052814-cd3ba865a116?w=900&q=85&auto=format&fit=crop',
+        tags: ['History', 'Culture', 'Megacity'],
+        budget: 2, budgetLabel: '€€ — Moderate',
+        desc: 'A civilisation, not just a country. From the Great Wall to Shanghai\'s neon skyline to the karst mountains of Guilin — China takes weeks to scratch and a lifetime to understand.',
+        time: 'Mar – May or Sep – Nov',
+        vibe: 'History + Megacities',
+        miss: 'The Great Wall at dawn',
+        highlights: [
+          'Walk a quieter section of the Great Wall at sunrise',
+          'Midnight dumplings in a Beijing hutong alley',
+          'Shanghai skyline from The Bund at night',
+          'Li River cruise through karst peaks in Guilin',
+          'Xi\'an terracotta warriors — 8,000 of them'
+        ]
+      },
+      {
+        id: 'armenia', name: 'Armenia', country: 'Armenia', flag: '🇦🇲', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1608764603960-f9e7d4dfde5f?w=900&q=85&auto=format&fit=crop',
+        tags: ['Hidden Gem', 'History', 'Off-grid'],
+        budget: 1, budgetLabel: '€ — Very affordable',
+        desc: 'One of the most underrated destinations on Earth. Ancient monasteries carved into cliffsides, pomegranate wine, world-class brandy, and the warmest hospitality you\'ll find anywhere.',
+        time: 'May – Oct',
+        vibe: 'Off the beaten path',
+        miss: 'Tatev Monastery',
+        highlights: [
+          'Tatev Monastery via the world\'s longest aerial tramway',
+          'Geghard — a monastery carved into living rock',
+          'Ararat brandy straight from the Yerevan distillery',
+          'Yerevan\'s "Pink City" cafe scene + pomegranate everything',
+          'Noravank canyon glowing at golden hour'
+        ]
+      },
+      {
+        id: 'japan', name: 'Japan', country: 'Japan', flag: '🇯🇵', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900&q=85&auto=format&fit=crop',
+        tags: ['Culture', 'Food', 'Aesthetic'],
+        budget: 3, budgetLabel: '€€€ — Mid to High',
+        desc: 'Nothing prepares you for Japan. Ancient temples between neon convenience stores. Ramen at 2am. Cherry blossoms in April. Bullet trains. A country simultaneously futuristic and deeply, quietly traditional.',
+        time: 'Mar – May (sakura) or Oct – Nov',
+        vibe: 'Sensory overload (the good kind)',
+        miss: 'Kyoto during sakura season',
+        highlights: [
+          'Cherry blossom season in Maruyama Park, Kyoto',
+          'Shibuya crossing — the most alive street corner on Earth',
+          'Eat everything: ramen, sushi, yakitori, takoyaki',
+          'Arashiyama bamboo grove at 6am before the crowds',
+          'Bullet train (shinkansen) between cities — get the window seat'
+        ]
+      },
+      {
+        id: 'new-york', name: 'New York', country: 'USA', flag: '🇺🇸', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=900&q=85&auto=format&fit=crop',
+        tags: ['City', 'Culture', 'Skyline'],
+        budget: 3, budgetLabel: '€€€ — Expensive',
+        desc: 'The city where everything feels possible and nothing closes. New York isn\'t just a destination — it\'s an energy. The skyline alone is worth the flight.',
+        time: 'Sep – Nov or Apr – Jun',
+        vibe: 'Maximum city energy',
+        miss: 'Brooklyn Bridge at golden hour',
+        highlights: [
+          'Walk the Brooklyn Bridge at sunset — both ways',
+          'Pizza slice and a walk in the East Village at midnight',
+          'The High Line, Chelsea Market, and the Meatpacking District',
+          'Central Park in full autumn colour',
+          'Views from Top of the Rock or One World Observatory'
+        ]
+      },
+      {
+        id: 'costa-rica', name: 'Costa Rica', country: 'Costa Rica', flag: '🇨🇷', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1518259102261-b40117eabbc9?w=900&q=85&auto=format&fit=crop',
+        tags: ['Wildlife', 'Adventure', 'Rainforest'],
+        budget: 2, budgetLabel: '€€ — Moderate',
+        desc: 'Pura Vida. The planet in miniature — active volcanoes, cloud forests, sloths in every tree, and both coastlines reachable in a few hours. No other country packs this much in.',
+        time: 'Dec – Apr (dry season)',
+        vibe: 'Adventure + Eco',
+        miss: 'Sloth spotting at Manuel Antonio',
+        highlights: [
+          'Sloth spotting in Manuel Antonio National Park',
+          'Arenal volcano hike followed by natural hot springs',
+          'Cloud forest canopy walk in Monteverde',
+          'Pacific sunsets vs Caribbean vibes — see both',
+          'Ziplining through the jungle canopy'
+        ]
+      },
+      {
+        id: 'norway', name: 'Norway', country: 'Norway', flag: '🇳🇴', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=900&q=85&auto=format&fit=crop',
+        tags: ['Fjords', 'Northern Lights', 'Silence'],
+        budget: 4, budgetLabel: '€€€€ — Very Expensive',
+        desc: 'Preposterously beautiful. Norway feels designed to make every other country look mediocre. Glacially carved fjords, the Northern Lights dancing overhead, and a silence you genuinely cannot find anywhere else.',
+        time: 'Jun – Aug (fjords) or Nov – Feb (Northern Lights)',
+        vibe: 'Epic natural beauty',
+        miss: 'Geirangerfjord',
+        highlights: [
+          'Geirangerfjord or Nærøyfjord by boat',
+          'Northern Lights chase in Tromsø',
+          'Preikestolen (Pulpit Rock) hike — sheer drop over the fjord',
+          'Bergen\'s colourful Bryggen wharf',
+          'Renting a remote cabin with fjord views and total silence'
+        ]
+      },
+      {
+        id: 'greece', name: 'Greece', country: 'Greece', flag: '🇬🇷', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=900&q=85&auto=format&fit=crop',
+        tags: ['Islands', 'History', 'Food'],
+        budget: 2, budgetLabel: '€€ — Moderate',
+        desc: 'Where mythology meets the Mediterranean. Greece never gets old — whether you\'re watching the sun dissolve into Santorini\'s caldera or eating octopus on a quiet harbour wall.',
+        time: 'May – Jun or Sep – Oct',
+        vibe: 'Timeless Mediterranean',
+        miss: 'Oia sunset, Santorini',
+        highlights: [
+          'Santorini caldera at sunset from Oia',
+          'Athens — the Acropolis at dusk from the Filopappou Hill',
+          'Island hopping by ferry — each island is completely different',
+          'Mikonos nightlife (if that\'s your thing)',
+          'Greek salad + fresh fish on every harbour'
+        ]
+      },
+      {
+        id: 'hawaii', name: 'Hawaii', country: 'USA', flag: '🇺🇸', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1598135753163-6167c1a1ad65?w=900&q=85&auto=format&fit=crop',
+        tags: ['Beaches', 'Volcanoes', 'Wilderness'],
+        budget: 3, budgetLabel: '€€€ — Mid to High',
+        desc: 'The Pacific at its most impossibly dramatic. Jungle waterfalls emptying into turquoise coves, active lava fields sliding into the ocean, and sunsets that somehow feel personal.',
+        time: 'Apr – Jun or Sep – Oct',
+        vibe: 'Wild nature + paradise',
+        miss: 'Nā Pali Coast by helicopter',
+        highlights: [
+          'Nā Pali Coast — helicopter, boat, or hike the Kalalau Trail',
+          'Watch lava flow into the ocean on the Big Island',
+          'Road to Hana on Maui — 64 miles of waterfalls',
+          'Waimea Canyon — "The Grand Canyon of the Pacific"',
+          'Humpback whales visible from shore in winter'
+        ]
+      },
+      {
+        id: 'bilbao', name: 'Bilbao', country: 'Spain · Basque Country', flag: '🇪🇸', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=85&auto=format&fit=crop',
+        tags: ['Architecture', 'Food', 'Underrated'],
+        budget: 2, budgetLabel: '€€ — Moderate',
+        desc: 'A city that reinvented itself. The Guggenheim Bilbao triggered an entire global movement in urban renewal — and now it\'s one of the coolest food and culture cities in Europe, still without the tourist overload.',
+        time: 'Apr – Jun or Sep – Oct',
+        vibe: 'Architecture + Food',
+        miss: 'Pintxos crawl in Casco Viejo',
+        highlights: [
+          'Guggenheim Museum Bilbao — the building is the art',
+          'Pintxos bar crawl through the old town',
+          'La Ribera Market — one of Europe\'s finest covered markets',
+          'Nervión riverside walk at golden hour',
+          'Day trip to San Sebastián — 30 minutes away, even better food'
+        ]
+      },
+      {
+        id: 'marrakesh', name: 'Marrakesh', country: 'Morocco', flag: '🇲🇦', type: 'regular',
+        img: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=900&q=85&auto=format&fit=crop',
+        tags: ['Medina', 'Souks', 'Sensory'],
+        budget: 1, budgetLabel: '€ — Very affordable',
+        desc: 'Absolute sensory overload — in the best possible way. Spice markets, rooftop riads, snake charmers, and the ancient madness of Djemaa el-Fna. Nothing prepares you for Marrakesh.',
+        time: 'Mar – May or Sep – Nov',
+        vibe: 'Chaos and beauty',
+        miss: 'Djemaa el-Fna at midnight',
+        highlights: [
+          'Getting genuinely lost in the medina souk — on purpose',
+          'Djemaa el-Fna square as the sun goes down',
+          'Rooftop riad breakfast with fresh OJ and mint tea',
+          'Majorelle Garden — cobalt blue and cacti',
+          'A proper hammam — do the traditional one, not the tourist one'
+        ]
+      },
+      {
+        id: 'maldives', name: 'Maldives', country: 'Republic of Maldives', flag: '🇲🇻', type: 'luxury',
+        img: 'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&q=85&auto=format&fit=crop',
+        tags: ['Overwater Villa', 'Diving', 'Pure Luxury'],
+        budget: 5, budgetLabel: '€€€€€ — True Luxury',
+        desc: 'The postcard that became real. Crystal lagoons, overwater bungalows with glass floors above the reef, and complete disconnection from the rest of the world. This one you save up for.',
+        time: 'Nov – Apr (dry season)',
+        vibe: 'Total escape, total luxury',
+        miss: 'Bioluminescent beach at night',
+        highlights: [
+          'Overwater villa with direct lagoon access and a glass floor',
+          'Bioluminescent plankton — the beach glows blue at night',
+          'Manta ray or whale shark snorkelling',
+          'Underwater restaurant dining',
+          'Sunrise from your private deck — complete silence, no one for miles'
+        ]
+      },
+      {
+        id: 'bahamas', name: 'Bahamas', country: 'The Bahamas', flag: '🇧🇸', type: 'luxury',
+        img: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?w=900&q=85&auto=format&fit=crop',
+        tags: ['Pink Sand', 'Swimming Pigs', 'Caribbean'],
+        budget: 4, budgetLabel: '€€€€ — Very Expensive',
+        desc: 'The Atlantic at its most surreal. Harbour Island\'s genuinely pink sand, the swimming pigs of Exuma, and water so clear it doesn\'t look real. The Bahamas is a proper flex.',
+        time: 'Dec – Apr',
+        vibe: 'Postcard luxury',
+        miss: 'Harbour Island pink sand beach',
+        highlights: [
+          'Harbour Island — the pink sand beach is actually pink',
+          'Swimming pigs at Big Major Cay, Exuma',
+          'Thunderball Grotto snorkelling (James Bond filmed here)',
+          'Dean\'s Blue Hole — world\'s second deepest blue hole',
+          'Exuma Cays Land and Sea Park — pristine, remote, wild'
+        ]
+      }
+    ];
+
+    let checked = JSON.parse(localStorage.getItem('tw-checked') || '[]');
+    let filter = 'all';
+
+    function dots(n) {
+      let h = '';
+      for (let i = 1; i <= 5; i++) h += `<span class="dot${i > n ? ' off' : ''}"></span>`;
+      return h;
+    }
+
+    function makeCard(d) {
+      const isChecked = checked.includes(d.id);
+      const div = document.createElement('div');
+      div.className = `card${isChecked ? ' visited' : ''}`;
+      div.dataset.id = d.id;
+      div.innerHTML = `
+        <img class="card-img" src="${d.img}" alt="${d.name}" loading="lazy">
+        <span class="card-badge ${d.type}">${d.type === 'luxury' ? '✦ Luxury' : 'Explore'}</span>
+        <button class="check-btn${isChecked ? ' done' : ''}" title="Mark as on your list" onclick="toggle(event,'${d.id}')">${isChecked ? '✓' : '♡'}</button>
+        <div class="card-overlay">
+          <div class="card-country">${d.flag}&nbsp; ${d.country}</div>
+          <div class="card-name">${d.name}</div>
+          <div class="budget-dots">${dots(d.budget)}</div>
+          <div class="card-tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+      `;
+      div.addEventListener('click', e => {
+        if (!e.target.classList.contains('check-btn')) open(d);
+      });
+      return div;
+    }
+
+    function render() {
+      const rg = document.getElementById('grid-regular');
+      const lg = document.getElementById('grid-luxury');
+      rg.innerHTML = '';
+      lg.innerHTML = '';
+
+      const regVisible = filter === 'all' || filter === 'regular';
+      const luxVisible = filter === 'all' || filter === 'luxury';
+
+      document.getElementById('div-regular').classList.toggle('section-hidden', !regVisible);
+      document.getElementById('div-luxury').classList.toggle('section-hidden', !luxVisible);
+
+      data.forEach(d => {
+        if (d.type === 'regular' && regVisible) rg.appendChild(makeCard(d));
+        if (d.type === 'luxury'  && luxVisible) lg.appendChild(makeCard(d));
+      });
+
+      document.getElementById('checked-n').textContent = checked.length;
+    }
+
+    function toggle(e, id) {
+      e.stopPropagation();
+      checked = checked.includes(id) ? checked.filter(x => x !== id) : [...checked, id];
+      localStorage.setItem('tw-checked', JSON.stringify(checked));
+      render();
+    }
+
+    function setFilter(f, btn) {
+      filter = f;
+      document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    function open(d) {
+      document.getElementById('m-img').src = d.img;
+      document.getElementById('m-flag').textContent = d.flag;
+      document.getElementById('m-title').textContent = d.name;
+      document.getElementById('m-country').textContent = d.country + (d.type === 'luxury' ? ' · ✦ Luxury Dream' : '');
+      document.getElementById('m-desc').textContent = d.desc;
+      document.getElementById('m-budget').innerHTML = `<div class="budget-dots" style="margin-bottom:4px">${dots(d.budget)}</div><small style="color:var(--muted);font-size:0.75rem">${d.budgetLabel}</small>`;
+      document.getElementById('m-time').textContent = d.time;
+      document.getElementById('m-vibe').textContent = d.vibe;
+      document.getElementById('m-miss').textContent = d.miss;
+      document.getElementById('m-highlights').innerHTML = d.highlights.map(h => `<li>${h}</li>`).join('');
+      document.getElementById('overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function maybeClose(e) {
+      if (e.target === document.getElementById('overlay')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    render();
+  </script>
+</body>
+</html>
