@@ -3,176 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Travel Wishlist ✈️</title>
+  <title>Our Travel Wishlist</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #0c0c0c; --surface: #161616; --gold: #c9a84c; --gold-light: #e8c97a;
-      --blue: #64b4ff; --green: #3cb454; --text: #f0ece4; --muted: #6b6760; --radius: 18px;
+      --bg:       #f4f1eb;
+      --white:    #ffffff;
+      --text:     #1a1815;
+      --text2:    #7a756e;
+      --text3:    #b0aa9f;
+      --gold:     #9a7a30;
+      --gold-lt:  #c9a84c;
+      --blue:     #3b82f6;
+      --green:    #16a34a;
+      --shadow:   0 1px 3px rgba(0,0,0,.06), 0 6px 20px rgba(0,0,0,.07);
+      --shadow-h: 0 2px 6px rgba(0,0,0,.07), 0 16px 40px rgba(0,0,0,.12);
+      --radius:   14px;
     }
-    body { background: var(--bg); color: var(--text); font-family: 'Georgia','Times New Roman',serif; min-height: 100vh; overflow-x: hidden; }
+
+    body { background: var(--bg); color: var(--text); font-family: 'Georgia','Times New Roman',serif; }
 
     /* HERO */
-    .hero { position: relative; text-align: center; padding: 90px 24px 60px; overflow: hidden; }
-    .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,.08) 0%, transparent 70%); pointer-events: none; }
-    .hero-eyebrow { display: inline-block; font-size: .7rem; text-transform: uppercase; letter-spacing: .3em; color: var(--gold); margin-bottom: 20px; border: 1px solid rgba(201,168,76,.3); padding: 6px 18px; border-radius: 20px; }
-    .hero h1 { font-size: clamp(2.8rem,7vw,6rem); font-weight: normal; letter-spacing: .02em; line-height: 1.1; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px; }
-    .hero-sub { color: var(--muted); font-size: 1rem; letter-spacing: .12em; text-transform: uppercase; }
-    .stats-row { display: flex; gap: 48px; justify-content: center; margin-top: 48px; flex-wrap: wrap; }
-    .stat { text-align: center; }
-    .stat-n { font-size: 2.4rem; color: var(--gold); line-height: 1; }
-    .stat-l { font-size: .65rem; text-transform: uppercase; letter-spacing: .2em; color: var(--muted); margin-top: 6px; }
+    .hero { text-align: center; padding: 80px 24px 56px; }
+    .hero-eye { display: inline-block; font-size: .68rem; text-transform: uppercase; letter-spacing: .3em; color: var(--gold); border: 1px solid rgba(154,122,48,.35); padding: 5px 16px; border-radius: 20px; margin-bottom: 22px; font-family: system-ui, sans-serif; }
+    .hero h1 { font-size: clamp(2.4rem,6vw,5rem); font-weight: normal; color: var(--text); letter-spacing: -.01em; margin-bottom: 12px; }
+    .hero-sub { font-size: .85rem; color: var(--text3); letter-spacing: .18em; text-transform: uppercase; font-family: system-ui, sans-serif; }
+    .stats { display: flex; gap: 48px; justify-content: center; margin-top: 44px; flex-wrap: wrap; }
+    .stat-n { font-size: 2.2rem; color: var(--text); line-height: 1; }
+    .stat-l { font-size: .62rem; text-transform: uppercase; letter-spacing: .18em; color: var(--text3); margin-top: 5px; font-family: system-ui, sans-serif; }
 
     /* CONTROLS */
-    .controls { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 28px 20px 8px; flex-wrap: wrap; }
-    .f-btn, .view-btn { padding: 9px 24px; border-radius: 30px; border: 1px solid; background: transparent; font-size: .78rem; font-family: inherit; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: all .25s; }
-    .f-btn.f-all { border-color: rgba(240,236,228,.25); color: rgba(240,236,228,.5); }
-    .f-btn.f-reg { border-color: rgba(100,180,255,.4); color: rgba(100,180,255,.7); }
-    .f-btn.f-lux { border-color: rgba(201,168,76,.5); color: var(--gold); }
-    .f-btn.active.f-all { background: var(--text); border-color: var(--text); color: var(--bg); }
-    .f-btn.active.f-reg { background: var(--blue); border-color: var(--blue); color: #0c0c0c; }
-    .f-btn.active.f-lux { background: var(--gold); border-color: var(--gold); color: #0c0c0c; }
-    .ctrl-sep { width: 1px; height: 24px; background: rgba(255,255,255,.1); flex-shrink: 0; }
-    .view-btn { border-color: rgba(255,255,255,.15); color: var(--muted); padding: 9px 18px; }
-    .view-btn.active { border-color: rgba(255,255,255,.4); color: var(--text); background: rgba(255,255,255,.07); }
+    .controls { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px 20px 4px; flex-wrap: wrap; }
+    .btn { padding: 8px 20px; border-radius: 30px; border: 1px solid; background: transparent; font-size: .72rem; font-family: system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: all .2s; }
+    .btn-all  { border-color: rgba(26,24,21,.2);   color: var(--text2); }
+    .btn-reg  { border-color: rgba(59,130,246,.35); color: var(--blue); }
+    .btn-lux  { border-color: rgba(154,122,48,.4);  color: var(--gold); }
+    .btn-all.active  { background: var(--text);  border-color: var(--text);  color: #fff; }
+    .btn-reg.active  { background: var(--blue);  border-color: var(--blue);  color: #fff; }
+    .btn-lux.active  { background: var(--gold);  border-color: var(--gold);  color: #fff; }
+    .sep { width: 1px; height: 20px; background: rgba(0,0,0,.12); }
+    .btn-view { border-color: rgba(0,0,0,.15); color: var(--text2); padding: 8px 16px; }
+    .btn-view.active { background: var(--white); border-color: rgba(0,0,0,.2); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
 
     /* MAP */
-    #map-wrap { display: none; padding: 20px 40px; max-width: 1380px; margin: 0 auto; }
+    #map-wrap { display: none; padding: 16px 36px; max-width: 1360px; margin: 0 auto; }
     #map-wrap.visible { display: block; }
-    #map { height: 600px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.07); overflow: hidden; }
-    .dest-marker { display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 16px; cursor: pointer; border: 2px solid rgba(255,255,255,.25); box-shadow: 0 2px 10px rgba(0,0,0,.6); width: 36px; height: 36px; transition: transform .2s; }
-    .dest-marker:hover { transform: scale(1.2); }
-    .dest-marker.reg { background: var(--blue); }
-    .dest-marker.lux { background: var(--gold); width: 40px; height: 40px; font-size: 18px; }
-    .dest-marker.bkd { background: var(--green); border-color: rgba(255,255,255,.5); }
-    .leaflet-popup-content-wrapper { background: #1a1a1a !important; border: 1px solid rgba(255,255,255,.1) !important; border-radius: 12px !important; color: var(--text) !important; box-shadow: 0 4px 24px rgba(0,0,0,.6) !important; }
-    .leaflet-popup-tip { background: #1a1a1a !important; }
-    .leaflet-popup-content { margin: 14px 18px !important; font-family: 'Georgia',serif; font-size: .9rem; text-align: center; }
+    #map { height: 580px; border-radius: var(--radius); border: 1px solid rgba(0,0,0,.08); overflow: hidden; box-shadow: var(--shadow); }
+    .pin { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer; border: 2px solid rgba(255,255,255,.8); box-shadow: 0 2px 8px rgba(0,0,0,.2); transition: transform .2s; }
+    .pin:hover { transform: scale(1.15); }
+    .pin-reg  { background: var(--blue); }
+    .pin-lux  { background: var(--gold-lt); width: 40px; height: 40px; font-size: 19px; }
+    .pin-bkd  { background: var(--green); }
+    .leaflet-popup-content-wrapper { background: #fff !important; border: 1px solid rgba(0,0,0,.08) !important; border-radius: 12px !important; box-shadow: 0 4px 20px rgba(0,0,0,.12) !important; color: var(--text) !important; }
+    .leaflet-popup-tip { background: #fff !important; }
+    .leaflet-popup-content { margin: 14px 18px !important; font-family: 'Georgia',serif; text-align: center; }
 
-    /* SECTION DIVIDERS */
-    .section-divider { display: flex; align-items: center; gap: 18px; padding: 36px 40px 14px; max-width: 1380px; margin: 0 auto; }
-    .sdl { flex: 1; height: 1px; }
-    .section-divider.regular .sdl { background: rgba(100,180,255,.2); }
-    .section-divider.luxury  .sdl { background: rgba(201,168,76,.3); }
-    .sdlabel { font-size: .65rem; text-transform: uppercase; letter-spacing: .25em; white-space: nowrap; }
-    .section-divider.regular .sdlabel { color: rgba(100,180,255,.6); }
-    .section-divider.luxury  .sdlabel { color: var(--gold); }
+    /* SECTION DIVIDER */
+    .divider { display: flex; align-items: center; gap: 16px; padding: 32px 36px 12px; max-width: 1360px; margin: 0 auto; }
+    .divider-line { flex: 1; height: 1px; background: rgba(0,0,0,.1); }
+    .divider-label { font-size: .62rem; text-transform: uppercase; letter-spacing: .22em; color: var(--text3); white-space: nowrap; font-family: system-ui, sans-serif; }
+    .divider.lux .divider-line { background: rgba(154,122,48,.25); }
+    .divider.lux .divider-label { color: var(--gold); }
 
     /* GRID */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 20px; padding: 0 40px 16px; max-width: 1380px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; padding: 0 36px 14px; max-width: 1360px; margin: 0 auto; }
 
     /* CARD */
-    .card { border-radius: var(--radius); overflow: hidden; cursor: pointer; position: relative; aspect-ratio: 3/4; background: var(--surface); transition: transform .3s cubic-bezier(.22,.68,0,1.2), box-shadow .3s; }
-    .card:hover { transform: translateY(-8px); box-shadow: 0 24px 64px rgba(0,0,0,.6); }
-    .card.booked { box-shadow: 0 0 0 2px var(--green), 0 12px 40px rgba(60,180,84,.2); }
-    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.22,.68,0,1); display: block; }
-    .card:hover .card-img { transform: scale(1.06); }
-    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,.3) 55%, rgba(0,0,0,.88) 80%, rgba(0,0,0,.96) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 22px; }
-    .card-badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 20px; font-size: .63rem; text-transform: uppercase; letter-spacing: .1em; font-weight: bold; }
-    .card-badge.regular { background: rgba(100,180,255,.85); color: #0c0c0c; }
-    .card-badge.luxury  { background: var(--gold); color: #0c0c0c; }
-    .booked-badge { position: absolute; top: 43px; left: 15px; padding: 4px 10px; border-radius: 20px; font-size: .6rem; text-transform: uppercase; letter-spacing: .08em; background: rgba(60,180,84,.85); color: #fff; display: none; }
-    .card.booked .booked-badge { display: block; }
-    .card-actions { position: absolute; top: 13px; right: 13px; display: flex; flex-direction: column; gap: 6px; z-index: 3; }
-    .action-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); backdrop-filter: blur(6px); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all .2s; color: white; }
-    .action-btn:hover { transform: scale(1.15); }
-    .action-btn.heart.on { background: rgba(220,60,60,.75); }
-    .action-btn.plane.on { background: rgba(60,180,84,.75); }
-    .card-country { font-size: .68rem; text-transform: uppercase; letter-spacing: .15em; color: rgba(255,255,255,.55); margin-bottom: 5px; }
-    .card-name { font-size: 1.65rem; font-weight: normal; line-height: 1.15; margin-bottom: 10px; }
-    .budget-dots { display: flex; gap: 3px; margin-bottom: 10px; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-    .dot.off { background: rgba(255,255,255,.12); }
-    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-    .tag { font-size: .6rem; padding: 3px 9px; border-radius: 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); text-transform: uppercase; letter-spacing: .06em; }
+    .card { border-radius: var(--radius); overflow: hidden; cursor: pointer; background: var(--white); box-shadow: var(--shadow); transition: transform .28s cubic-bezier(.22,.68,0,1.2), box-shadow .28s; position: relative; }
+    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-h); }
+    .card.booked { outline: 2px solid var(--green); outline-offset: 0px; }
 
-    /* MODAL OVERLAY */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+    .card-photo { position: relative; aspect-ratio: 3/4; overflow: hidden; }
+    .card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .55s cubic-bezier(.22,.68,0,1); filter: brightness(.96) saturate(.88); }
+    .card:hover .card-photo img { transform: scale(1.04); }
+
+    /* photo overlay — only at bottom for text */
+    .card-photo-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 45%, rgba(0,0,0,.18) 65%, rgba(0,0,0,.72) 100%); }
+
+    /* text anchored to bottom of photo */
+    .card-photo-text { position: absolute; bottom: 16px; left: 18px; right: 52px; }
+    .card-flag-country { font-size: .65rem; text-transform: uppercase; letter-spacing: .14em; color: rgba(255,255,255,.7); margin-bottom: 4px; font-family: system-ui, sans-serif; }
+    .card-name { font-size: 1.45rem; font-weight: normal; color: #fff; line-height: 1.15; }
+
+    /* action buttons — bottom right of photo */
+    .card-actions { position: absolute; bottom: 14px; right: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .act { width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.9); transition: all .2s; }
+    .act:hover { background: rgba(255,255,255,.35); transform: scale(1.1); }
+    .act.heart.on { background: rgba(220,50,50,.65); color: #fff; }
+    .act.plane.on { background: rgba(22,163,74,.65); color: #fff; }
+
+    /* luxury badge */
+    .lux-badge { position: absolute; top: 12px; left: 12px; background: var(--gold-lt); color: #fff; font-size: .58rem; text-transform: uppercase; letter-spacing: .1em; padding: 4px 10px; border-radius: 20px; font-family: system-ui, sans-serif; }
+
+    /* booked strip under photo */
+    .booked-strip { display: none; background: #f0fdf4; border-bottom: 1px solid #d1fae5; padding: 7px 18px; font-size: .7rem; color: var(--green); font-family: system-ui, sans-serif; letter-spacing: .05em; }
+    .card.booked .booked-strip { display: block; }
+
+    /* card info strip */
+    .card-info { padding: 14px 18px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .budget-dots { display: flex; gap: 3px; }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+    .dot.off { background: rgba(0,0,0,.12); }
+    .card-time { font-size: .65rem; color: var(--text3); font-family: system-ui, sans-serif; }
+
+    /* MODAL */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
     .overlay.open { opacity: 1; pointer-events: all; }
-    .modal { background: #141414; border: 1px solid rgba(255,255,255,.07); border-radius: 22px; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; transform: translateY(24px) scale(.97); transition: transform .32s cubic-bezier(.22,.68,0,1.2); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent; }
-    .overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal { background: var(--white); border-radius: 20px; max-width: 660px; width: 100%; max-height: 90vh; overflow-y: auto; transform: translateY(20px) scale(.97); transition: transform .28s cubic-bezier(.22,.68,0,1.2); scrollbar-width: thin; }
+    .overlay.open .modal { transform: none; }
 
-    /* CAROUSEL */
-    .carousel { position: relative; height: 280px; overflow: hidden; border-radius: 22px 22px 0 0; background: #0c0c0c; }
-    .c-img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; opacity: 0; transition: opacity .4s; }
-    .c-img.on { opacity: 1; }
-    .c-grad { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(transparent,rgba(20,20,20,.85)); pointer-events: none; z-index: 1; }
-    .c-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,.55); backdrop-filter: blur(6px); border: none; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; transition: background .2s; line-height: 1; }
-    .c-arrow:hover { background: rgba(0,0,0,.8); }
-    .c-arrow.prev { left: 12px; }
-    .c-arrow.next { right: 12px; }
-    .c-dots { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2; }
-    .c-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.35); transition: all .2s; cursor: pointer; }
-    .c-dot.on { background: white; width: 18px; border-radius: 3px; }
-    .modal-close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,.55); backdrop-filter: blur(6px); border: none; color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; transition: background .2s; }
-    .modal-close:hover { background: rgba(0,0,0,.85); }
+    .modal-photo { position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 20px 20px 0 0; }
+    .modal-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(.96) saturate(.88); }
+    .modal-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.9); border: none; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--text); z-index: 1; transition: background .2s; }
+    .modal-close:hover { background: #fff; }
 
-    /* MODAL BODY */
-    .modal-body { padding: 26px 30px 34px; }
-    .m-flag { font-size: 2.2rem; margin-bottom: 8px; line-height: 1; }
-    .m-title { font-size: 2.1rem; font-weight: normal; line-height: 1.1; margin-bottom: 4px; }
-    .m-country { font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); margin-bottom: 20px; }
-    .m-desc { font-size: .95rem; line-height: 1.75; color: rgba(240,236,228,.78); margin-bottom: 24px; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-    .info-block { background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 14px 16px; }
-    .info-block.gold { border-color: rgba(201,168,76,.2); background: rgba(201,168,76,.04); }
-    .info-label { font-size: .6rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); margin-bottom: 5px; }
-    .info-value { font-size: .88rem; line-height: 1.4; }
-    .info-value small { color: var(--muted); font-size: .75rem; display: block; margin-top: 2px; }
-    .hl-label { font-size: .65rem; text-transform: uppercase; letter-spacing: .2em; color: var(--muted); margin-bottom: 12px; }
-    .highlights { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-    .highlights li { display: flex; gap: 12px; font-size: .88rem; line-height: 1.5; color: rgba(240,236,228,.8); }
-    .highlights li::before { content: '→'; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+    .modal-body { padding: 28px 30px 36px; }
+    .m-flag { font-size: 1.8rem; margin-bottom: 10px; }
+    .m-title { font-size: 1.9rem; font-weight: normal; margin-bottom: 3px; }
+    .m-country { font-size: .7rem; text-transform: uppercase; letter-spacing: .16em; color: var(--text3); margin-bottom: 18px; font-family: system-ui, sans-serif; }
+    .m-desc { font-size: .93rem; line-height: 1.8; color: var(--text2); margin-bottom: 24px; }
 
-    /* BOOKING OVERLAY */
-    #book-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
-    #book-overlay.open { opacity: 1; pointer-events: all; }
-    .book-modal { background: #181818; border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 32px 28px; max-width: 380px; width: 100%; transform: scale(.95); transition: transform .25s cubic-bezier(.22,.68,0,1.2); text-align: center; }
-    #book-overlay.open .book-modal { transform: scale(1); }
-    .book-flag { font-size: 2.5rem; margin-bottom: 10px; }
-    .book-name { font-size: 1.4rem; font-weight: normal; margin-bottom: 4px; }
-    .book-sub { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 24px; }
-    .book-selects { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-    .book-selects select { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; color: var(--text); font-family: inherit; font-size: .9rem; padding: 10px 14px; cursor: pointer; outline: none; flex: 1; }
-    .book-selects select:focus { border-color: rgba(201,168,76,.5); }
-    .book-confirm { width: 100%; padding: 13px; border-radius: 12px; background: var(--gold); color: #0c0c0c; border: none; font-family: inherit; font-size: .9rem; letter-spacing: .05em; cursor: pointer; transition: background .2s; margin-bottom: 10px; }
-    .book-confirm:hover { background: var(--gold-light); }
-    .book-cancel { background: none; border: none; color: var(--muted); font-family: inherit; font-size: .8rem; cursor: pointer; text-transform: uppercase; letter-spacing: .1em; }
-    .book-cancel:hover { color: var(--text); }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .ib { background: var(--bg); border-radius: 10px; padding: 13px 15px; }
+    .ib.gold { background: #fdf8ee; border: 1px solid rgba(154,122,48,.15); }
+    .ib-label { font-size: .58rem; text-transform: uppercase; letter-spacing: .18em; color: var(--text3); margin-bottom: 4px; font-family: system-ui, sans-serif; }
+    .ib-val { font-size: .85rem; color: var(--text); line-height: 1.4; }
+    .ib-val small { display: block; font-size: .72rem; color: var(--text3); margin-top: 2px; font-family: system-ui, sans-serif; }
 
-    footer { text-align: center; padding: 60px 20px 40px; color: var(--muted); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
-    footer span { color: var(--gold); }
+    .hl-label { font-size: .6rem; text-transform: uppercase; letter-spacing: .2em; color: var(--text3); margin-bottom: 11px; font-family: system-ui, sans-serif; }
+    .highlights { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .highlights li { display: flex; gap: 11px; font-size: .87rem; line-height: 1.55; color: var(--text2); }
+    .highlights li::before { content: '→'; color: var(--gold); flex-shrink: 0; margin-top: 2px; }
 
-    .grid-sections.hidden { display: none !important; }
-    .sec-hidden { display: none !important; }
+    /* BOOKING */
+    #book-ov { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+    #book-ov.open { opacity: 1; pointer-events: all; }
+    .book-box { background: #fff; border-radius: 18px; padding: 30px 26px; max-width: 360px; width: 100%; transform: scale(.96); transition: transform .22s cubic-bezier(.22,.68,0,1.2); text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,.15); }
+    #book-ov.open .book-box { transform: none; }
+    .book-flag { font-size: 2.2rem; margin-bottom: 8px; }
+    .book-name { font-size: 1.3rem; font-weight: normal; margin-bottom: 3px; }
+    .book-sub { font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text3); margin-bottom: 22px; font-family: system-ui, sans-serif; }
+    .book-row { display: flex; gap: 10px; margin-bottom: 18px; }
+    .book-row select { flex: 1; background: var(--bg); border: 1px solid rgba(0,0,0,.12); border-radius: 9px; color: var(--text); font-family: inherit; font-size: .88rem; padding: 10px 12px; cursor: pointer; outline: none; }
+    .book-row select:focus { border-color: var(--gold); }
+    .book-ok { width: 100%; padding: 12px; border-radius: 10px; background: var(--text); color: #fff; border: none; font-family: system-ui, sans-serif; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; transition: opacity .2s; }
+    .book-ok:hover { opacity: .85; }
+    .book-no { background: none; border: none; color: var(--text3); font-family: system-ui, sans-serif; font-size: .75rem; cursor: pointer; text-transform: uppercase; letter-spacing: .1em; }
 
-    @media (max-width: 700px) {
+    footer { text-align: center; padding: 50px 20px 36px; color: var(--text3); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; font-family: system-ui, sans-serif; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 720px) {
       .grid { grid-template-columns: 1fr 1fr; padding: 0 14px 12px; gap: 12px; }
-      .section-divider { padding: 28px 16px 10px; }
-      .card-name { font-size: 1.1rem; }
-      .card-tags { display: none; }
-      .hero { padding: 70px 20px 50px; }
-      .stats-row { gap: 28px; }
-      .modal-body { padding: 20px 20px 28px; }
+      .divider { padding: 24px 14px 10px; }
+      .hero { padding: 56px 20px 40px; }
+      .stats { gap: 28px; }
+      #map-wrap { padding: 14px; }
+      #map { height: 420px; }
+      .modal-body { padding: 20px 18px 28px; }
       .info-grid { grid-template-columns: 1fr; }
-      #map-wrap { padding: 20px 14px; }
-      #map { height: 450px; }
+      .card-name { font-size: 1.15rem; }
     }
     @media (max-width: 420px) {
       .grid { grid-template-columns: 1fr; }
-      .card { aspect-ratio: 4/3; }
     }
   </style>
 </head>
 <body>
 
 <div class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-eyebrow">Travel Wishlist</div>
+  <div class="hero-eye">Travel Wishlist</div>
   <h1>Places to Go</h1>
   <div class="hero-sub">Our destinations · The plan</div>
-  <div class="stats-row">
+  <div class="stats">
     <div class="stat"><div class="stat-n">14</div><div class="stat-l">Destinations</div></div>
     <div class="stat"><div class="stat-n" id="sn-saved">0</div><div class="stat-l">Saved ♡</div></div>
     <div class="stat"><div class="stat-n" id="sn-booked">0</div><div class="stat-l">We're Going ✈</div></div>
@@ -180,35 +186,28 @@
 </div>
 
 <div class="controls">
-  <button class="f-btn f-all active" onclick="setFilter('all',this)">All</button>
-  <button class="f-btn f-reg" onclick="setFilter('regular',this)">Regular Trips</button>
-  <button class="f-btn f-lux" onclick="setFilter('luxury',this)">✦ Luxury Dreams</button>
-  <div class="ctrl-sep"></div>
-  <button class="view-btn active" id="btn-grid" onclick="setView('grid')">⊞ Grid</button>
-  <button class="view-btn" id="btn-map" onclick="setView('map')">◉ Map</button>
+  <button class="btn btn-all active" onclick="setFilter('all',this)">All</button>
+  <button class="btn btn-reg" onclick="setFilter('regular',this)">Regular Trips</button>
+  <button class="btn btn-lux" onclick="setFilter('luxury',this)">✦ Luxury</button>
+  <div class="sep"></div>
+  <button class="btn btn-view active" id="btn-grid" onclick="setView('grid')">Grid</button>
+  <button class="btn btn-view" id="btn-map" onclick="setView('map')">Map</button>
 </div>
 
 <div id="map-wrap"><div id="map"></div></div>
 
-<div class="grid-sections" id="grid-sections">
-  <div class="section-divider regular" id="div-reg">
-    <div class="sdl"></div><div class="sdlabel">✈ Regular Trips</div><div class="sdl"></div>
-  </div>
+<div id="grid-sections">
+  <div class="divider reg" id="div-reg"><div class="divider-line"></div><div class="divider-label">Regular Trips</div><div class="divider-line"></div></div>
   <div class="grid" id="grid-reg"></div>
-  <div class="section-divider luxury" id="div-lux">
-    <div class="sdl"></div><div class="sdlabel">✦ Luxury Dreams</div><div class="sdl"></div>
-  </div>
+  <div class="divider lux" id="div-lux"><div class="divider-line"></div><div class="divider-label">✦ Luxury Dreams</div><div class="divider-line"></div></div>
   <div class="grid" id="grid-lux"></div>
 </div>
 
-<!-- DESTINATION MODAL -->
+<!-- MODAL -->
 <div class="overlay" id="overlay" onclick="maybeClose(event)">
   <div class="modal">
-    <div class="carousel" id="carousel">
-      <div class="c-grad"></div>
-      <button class="c-arrow prev" onclick="slide(event,-1)">‹</button>
-      <button class="c-arrow next" onclick="slide(event,1)">›</button>
-      <div class="c-dots" id="c-dots"></div>
+    <div class="modal-photo">
+      <img id="m-img" src="" alt="">
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
@@ -217,12 +216,12 @@
       <div class="m-country" id="m-country"></div>
       <p class="m-desc" id="m-desc"></p>
       <div class="info-grid">
-        <div class="info-block"><div class="info-label">Budget</div><div class="info-value" id="m-budget"></div></div>
-        <div class="info-block"><div class="info-label">Best Time to Go</div><div class="info-value" id="m-time"></div></div>
-        <div class="info-block"><div class="info-label">Vibe</div><div class="info-value" id="m-vibe"></div></div>
-        <div class="info-block"><div class="info-label">Don't Miss</div><div class="info-value" id="m-miss"></div></div>
-        <div class="info-block gold"><div class="info-label">✈ Flight from Zurich</div><div class="info-value" id="m-ftime"></div></div>
-        <div class="info-block gold"><div class="info-label">Flights from</div><div class="info-value" id="m-fcost"></div></div>
+        <div class="ib"><div class="ib-label">Budget</div><div class="ib-val" id="m-budget"></div></div>
+        <div class="ib"><div class="ib-label">Best Time</div><div class="ib-val" id="m-time"></div></div>
+        <div class="ib"><div class="ib-label">Vibe</div><div class="ib-val" id="m-vibe"></div></div>
+        <div class="ib"><div class="ib-label">Don't Miss</div><div class="ib-val" id="m-miss"></div></div>
+        <div class="ib gold"><div class="ib-label">✈ From Zurich</div><div class="ib-val" id="m-ftime"></div></div>
+        <div class="ib gold"><div class="ib-label">Flights from</div><div class="ib-val" id="m-fcost"></div></div>
       </div>
       <div class="hl-label">Highlights</div>
       <ul class="highlights" id="m-hl"></ul>
@@ -230,13 +229,13 @@
   </div>
 </div>
 
-<!-- BOOKING OVERLAY -->
-<div id="book-overlay" onclick="maybeCloseBook(event)">
-  <div class="book-modal">
+<!-- BOOKING -->
+<div id="book-ov" onclick="maybeCloseBook(event)">
+  <div class="book-box">
     <div class="book-flag" id="book-flag"></div>
     <div class="book-name" id="book-name"></div>
     <div class="book-sub">When are you going?</div>
-    <div class="book-selects">
+    <div class="book-row">
       <select id="book-month">
         <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option>
         <option>May</option><option>Jun</option><option>Jul</option><option>Aug</option>
@@ -247,137 +246,120 @@
         <option>2028</option><option>2029</option><option>2030</option>
       </select>
     </div>
-    <button class="book-confirm" onclick="confirmBook()">Let's go! ✈</button><br>
-    <button class="book-cancel" onclick="closeBook()">Cancel</button>
+    <button class="book-ok" onclick="confirmBook()">Let's go ✈</button>
+    <button class="book-no" onclick="closeBook()">Cancel</button>
   </div>
 </div>
 
-<footer>Made with wanderlust · <span>✈</span> · ♡ to save · ✈ to book a date</footer>
+<footer>Made with wanderlust · ♡ save · ✈ book a date</footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 const data = [
   { id:'madeira', name:'Madeira', country:'Portugal', flag:'🇵🇹', type:'regular', coords:[32.7607,-16.9595],
-    imgs:['https://images.unsplash.com/photo-1548681528-6a5c45b66b42?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?madeira+levada+hiking','https://source.unsplash.com/featured/900x600/?funchal+madeira+harbor'],
-    tags:['Nature','Hiking','Island'], budget:2, budgetLabel:'€€ — Moderate',
-    flight:{time:'~3h 30m', cost:'CHF 80–200'},
+    img:'https://images.unsplash.com/photo-1548681528-6a5c45b66b42?w=900&q=85&auto=format&fit=crop',
+    budget:2, budgetLabel:'€€ — Moderate', flight:{time:'~3h 30m', cost:'CHF 80–200'},
     desc:'An island of eternal spring floating in the Atlantic. Volcanic, dramatic, and impossibly lush — levada walks carved into cliffs that drop straight into the ocean.',
     time:'Apr – Oct', vibe:'Nature & Drama', miss:'Ponta de São Lourenço',
     highlights:['Levada trails through ancient laurisilva cloud forest','Cabo Girão — one of Europe\'s highest sea cliffs','Poncha (local firewater) in a hilltop bar','Toboggan ride down the hill from Monte village','Seafood at Funchal\'s Mercado dos Lavradores'] },
 
   { id:'tenerife', name:'Tenerife', country:'Spain', flag:'🇪🇸', type:'regular', coords:[28.2916,-16.6291],
-    imgs:['https://images.unsplash.com/photo-1529907686050-7d8f9793b8f2?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?teide+volcano+tenerife','https://source.unsplash.com/featured/900x600/?tenerife+los+gigantes+coast'],
-    tags:['Volcano','Beach','Year-round'], budget:2, budgetLabel:'€€ — Moderate',
-    flight:{time:'~4h', cost:'CHF 80–220'},
+    img:'https://images.unsplash.com/photo-1529907686050-7d8f9793b8f2?w=900&q=85&auto=format&fit=crop',
+    budget:2, budgetLabel:'€€ — Moderate', flight:{time:'~4h', cost:'CHF 80–220'},
     desc:'Spain\'s most dramatic island. Mount Teide looms over black sand beaches while the north stays green and misty. The contrast is wild — and the sun is guaranteed year-round.',
     time:'Year-round', vibe:'Sun + Adventure', miss:'Teide at sunrise',
     highlights:['Hike (or cable car) Mount Teide — Spain\'s highest peak','Masca Gorge trek down to a secret beach','Los Gigantes cliffs by boat at sunset','Siam Park water park — genuinely world-class','Black sand beaches of Playa Jardín in the north'] },
 
   { id:'china', name:'China', country:'China', flag:'🇨🇳', type:'regular', coords:[35.8617,104.1954],
-    imgs:['https://images.unsplash.com/photo-1508804052814-cd3ba865a116?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?shanghai+skyline+night','https://source.unsplash.com/featured/900x600/?guilin+karst+river+china'],
-    tags:['History','Culture','Megacity'], budget:2, budgetLabel:'€€ — Moderate',
-    flight:{time:'~11h', cost:'CHF 500–900'},
+    img:'https://images.unsplash.com/photo-1508804052814-cd3ba865a116?w=900&q=85&auto=format&fit=crop',
+    budget:2, budgetLabel:'€€ — Moderate', flight:{time:'~11h', cost:'CHF 500–900'},
     desc:'A civilisation, not just a country. From the Great Wall to Shanghai\'s neon skyline to the karst mountains of Guilin — China takes weeks to scratch and a lifetime to understand.',
     time:'Mar – May or Sep – Nov', vibe:'History + Megacities', miss:'The Great Wall at dawn',
     highlights:['Walk a quieter section of the Great Wall at sunrise','Midnight dumplings in a Beijing hutong alley','Shanghai skyline from The Bund at night','Li River cruise through karst peaks in Guilin','Xi\'an terracotta warriors — 8,000 of them'] },
 
   { id:'armenia', name:'Armenia', country:'Armenia', flag:'🇦🇲', type:'regular', coords:[40.1872,44.5152],
-    imgs:['https://images.unsplash.com/photo-1608764603960-f9e7d4dfde5f?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?yerevan+armenia+city','https://source.unsplash.com/featured/900x600/?armenia+monastery+mountain'],
-    tags:['Hidden Gem','History','Off-grid'], budget:1, budgetLabel:'€ — Very affordable',
-    flight:{time:'~4h 30m', cost:'CHF 180–350'},
+    img:'https://images.unsplash.com/photo-1608764603960-f9e7d4dfde5f?w=900&q=85&auto=format&fit=crop',
+    budget:1, budgetLabel:'€ — Very affordable', flight:{time:'~4h 30m', cost:'CHF 180–350'},
     desc:'One of the most underrated destinations on Earth. Ancient monasteries carved into cliffsides, pomegranate wine, world-class brandy, and the warmest hospitality you\'ll find anywhere.',
     time:'May – Oct', vibe:'Off the beaten path', miss:'Tatev Monastery',
     highlights:['Tatev Monastery via the world\'s longest aerial tramway','Geghard — a monastery carved into living rock','Ararat brandy straight from the Yerevan distillery','Yerevan\'s "Pink City" cafe scene + pomegranate everything','Noravank canyon glowing at golden hour'] },
 
   { id:'japan', name:'Japan', country:'Japan', flag:'🇯🇵', type:'regular', coords:[36.2048,138.2529],
-    imgs:['https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?kyoto+cherry+blossom+temple','https://source.unsplash.com/featured/900x600/?mount+fuji+japan+morning'],
-    tags:['Culture','Food','Aesthetic'], budget:3, budgetLabel:'€€€ — Mid to High',
-    flight:{time:'~12h', cost:'CHF 600–1,100'},
+    img:'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900&q=85&auto=format&fit=crop',
+    budget:3, budgetLabel:'€€€ — Mid to High', flight:{time:'~12h', cost:'CHF 600–1,100'},
     desc:'Nothing prepares you for Japan. Ancient temples between neon convenience stores. Ramen at 2am. Cherry blossoms. Bullet trains. Simultaneously futuristic and deeply, quietly traditional.',
     time:'Mar – May (sakura) or Oct – Nov', vibe:'Sensory overload (the good kind)', miss:'Kyoto during sakura season',
     highlights:['Cherry blossom season in Maruyama Park, Kyoto','Shibuya crossing — the most alive street corner on Earth','Eat everything: ramen, sushi, yakitori, takoyaki','Arashiyama bamboo grove at 6am before the crowds','Bullet train (shinkansen) — get the window seat'] },
 
   { id:'new-york', name:'New York', country:'USA', flag:'🇺🇸', type:'regular', coords:[40.7128,-74.0060],
-    imgs:['https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?brooklyn+bridge+new+york+sunset','https://source.unsplash.com/featured/900x600/?central+park+autumn+new+york'],
-    tags:['City','Culture','Skyline'], budget:3, budgetLabel:'€€€ — Expensive',
-    flight:{time:'~9h', cost:'CHF 400–800'},
+    img:'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=900&q=85&auto=format&fit=crop',
+    budget:3, budgetLabel:'€€€ — Expensive', flight:{time:'~9h', cost:'CHF 400–800'},
     desc:'The city where everything feels possible and nothing closes. New York isn\'t just a destination — it\'s an energy. The skyline alone is worth the flight.',
     time:'Sep – Nov or Apr – Jun', vibe:'Maximum city energy', miss:'Brooklyn Bridge at golden hour',
     highlights:['Walk the Brooklyn Bridge at sunset — both ways','Pizza slice and a walk in the East Village at midnight','The High Line, Chelsea Market, and the Meatpacking District','Central Park in full autumn colour','Views from Top of the Rock or One World Observatory'] },
 
   { id:'costa-rica', name:'Costa Rica', country:'Costa Rica', flag:'🇨🇷', type:'regular', coords:[9.7489,-83.7534],
-    imgs:['https://images.unsplash.com/photo-1518259102261-b40117eabbc9?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?arenal+volcano+costa+rica','https://source.unsplash.com/featured/900x600/?costa+rica+sloth+wildlife+jungle'],
-    tags:['Wildlife','Adventure','Rainforest'], budget:2, budgetLabel:'€€ — Moderate',
-    flight:{time:'~12h', cost:'CHF 600–1,200'},
+    img:'https://images.unsplash.com/photo-1518259102261-b40117eabbc9?w=900&q=85&auto=format&fit=crop',
+    budget:2, budgetLabel:'€€ — Moderate', flight:{time:'~12h', cost:'CHF 600–1,200'},
     desc:'Pura Vida. The planet in miniature — active volcanoes, cloud forests, sloths in every tree, and both coastlines reachable in a few hours.',
     time:'Dec – Apr (dry season)', vibe:'Adventure + Eco', miss:'Sloth spotting at Manuel Antonio',
     highlights:['Sloth spotting in Manuel Antonio National Park','Arenal volcano hike followed by natural hot springs','Cloud forest canopy walk in Monteverde','Pacific sunsets vs Caribbean vibes — see both','Ziplining through the jungle canopy'] },
 
   { id:'norway', name:'Norway', country:'Norway', flag:'🇳🇴', type:'regular', coords:[60.4720,8.4689],
-    imgs:['https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?northern+lights+aurora+norway','https://source.unsplash.com/featured/900x600/?bergen+norway+bryggen+wharf'],
-    tags:['Fjords','Northern Lights','Silence'], budget:4, budgetLabel:'€€€€ — Very Expensive',
-    flight:{time:'~2h 30m', cost:'CHF 100–250'},
+    img:'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=900&q=85&auto=format&fit=crop',
+    budget:4, budgetLabel:'€€€€ — Very Expensive', flight:{time:'~2h 30m', cost:'CHF 100–250'},
     desc:'Preposterously beautiful. Norway feels designed to make every other country look mediocre. Glacially carved fjords, the Northern Lights overhead, and a silence you genuinely can\'t find anywhere else.',
     time:'Jun – Aug (fjords) or Nov – Feb (Northern Lights)', vibe:'Epic natural beauty', miss:'Geirangerfjord',
     highlights:['Geirangerfjord or Nærøyfjord by boat','Northern Lights chase in Tromsø','Preikestolen (Pulpit Rock) hike — sheer drop over the fjord','Bergen\'s colourful Bryggen wharf','Renting a remote cabin with fjord views and total silence'] },
 
   { id:'greece', name:'Greece', country:'Greece', flag:'🇬🇷', type:'regular', coords:[39.0742,21.8243],
-    imgs:['https://images.unsplash.com/photo-1533105079780-92b9be482077?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?athens+acropolis+greece','https://source.unsplash.com/featured/900x600/?greek+islands+aegean+sea+blue'],
-    tags:['Islands','History','Food'], budget:2, budgetLabel:'€€ — Moderate',
-    flight:{time:'~3h', cost:'CHF 80–200'},
+    img:'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=900&q=85&auto=format&fit=crop',
+    budget:2, budgetLabel:'€€ — Moderate', flight:{time:'~3h', cost:'CHF 80–200'},
     desc:'Where mythology meets the Mediterranean. Greece never gets old — whether you\'re watching the sun dissolve into Santorini\'s caldera or eating octopus on a quiet harbour wall.',
     time:'May – Jun or Sep – Oct', vibe:'Timeless Mediterranean', miss:'Oia sunset, Santorini',
     highlights:['Santorini caldera at sunset from Oia','Athens — the Acropolis at dusk from Filopappou Hill','Island hopping by ferry — each island is completely different','Mykonos nightlife (if that\'s your thing)','Greek salad + fresh fish on every harbour'] },
 
   { id:'hawaii', name:'Hawaii', country:'USA', flag:'🇺🇸', type:'regular', coords:[20.7984,-156.3319],
-    imgs:['https://images.unsplash.com/photo-1598135753163-6167c1a1ad65?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?hawaii+waterfall+lush+green','https://source.unsplash.com/featured/900x600/?hawaii+volcano+lava+big+island'],
-    tags:['Beaches','Volcanoes','Wilderness'], budget:3, budgetLabel:'€€€ — Mid to High',
-    flight:{time:'~14h', cost:'CHF 800–1,400'},
+    img:'https://images.unsplash.com/photo-1598135753163-6167c1a1ad65?w=900&q=85&auto=format&fit=crop',
+    budget:3, budgetLabel:'€€€ — Mid to High', flight:{time:'~14h', cost:'CHF 800–1,400'},
     desc:'The Pacific at its most impossibly dramatic. Jungle waterfalls emptying into turquoise coves, active lava fields sliding into the ocean, and sunsets that feel personal.',
     time:'Apr – Jun or Sep – Oct', vibe:'Wild nature + paradise', miss:'Nā Pali Coast by helicopter',
     highlights:['Nā Pali Coast — helicopter, boat, or hike the Kalalau Trail','Watch lava flow into the ocean on the Big Island','Road to Hana on Maui — 64 miles of waterfalls','Waimea Canyon — "The Grand Canyon of the Pacific"','Humpback whales visible from shore in winter'] },
 
   { id:'bilbao', name:'Bilbao', country:'Spain · Basque Country', flag:'🇪🇸', type:'regular', coords:[43.2630,-2.9350],
-    imgs:['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?bilbao+old+town+basque','https://source.unsplash.com/featured/900x600/?san+sebastian+pintxos+basque+food'],
-    tags:['Architecture','Food','Underrated'], budget:2, budgetLabel:'€€ — Moderate',
-    flight:{time:'~1h 30m', cost:'CHF 80–180'},
+    img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=85&auto=format&fit=crop',
+    budget:2, budgetLabel:'€€ — Moderate', flight:{time:'~1h 30m', cost:'CHF 80–180'},
     desc:'A city that reinvented itself. The Guggenheim Bilbao triggered a global movement in urban renewal — now one of the coolest food and culture cities in Europe, still without the tourist overload.',
     time:'Apr – Jun or Sep – Oct', vibe:'Architecture + Food', miss:'Pintxos crawl in Casco Viejo',
     highlights:['Guggenheim Museum Bilbao — the building is the art','Pintxos bar crawl through the old town','La Ribera Market — one of Europe\'s finest covered markets','Nervión riverside walk at golden hour','Day trip to San Sebastián — 30 min away, even better food'] },
 
   { id:'marrakesh', name:'Marrakesh', country:'Morocco', flag:'🇲🇦', type:'regular', coords:[31.6295,-7.9811],
-    imgs:['https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?marrakech+souk+spice+market','https://source.unsplash.com/featured/900x600/?morocco+riad+courtyard+tiles'],
-    tags:['Medina','Souks','Sensory'], budget:1, budgetLabel:'€ — Very affordable',
-    flight:{time:'~3h', cost:'CHF 100–250'},
+    img:'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=900&q=85&auto=format&fit=crop',
+    budget:1, budgetLabel:'€ — Very affordable', flight:{time:'~3h', cost:'CHF 100–250'},
     desc:'Absolute sensory overload — in the best possible way. Spice markets, rooftop riads, snake charmers, and the ancient madness of Djemaa el-Fna. Nothing prepares you for Marrakesh.',
     time:'Mar – May or Sep – Nov', vibe:'Chaos and beauty', miss:'Djemaa el-Fna at midnight',
     highlights:['Getting genuinely lost in the medina souk — on purpose','Djemaa el-Fna square as the sun goes down','Rooftop riad breakfast with fresh OJ and mint tea','Majorelle Garden — cobalt blue and cacti','A proper hammam — do the traditional one, not the tourist one'] },
 
   { id:'maldives', name:'Maldives', country:'Republic of Maldives', flag:'🇲🇻', type:'luxury', coords:[3.2028,73.2207],
-    imgs:['https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?maldives+reef+coral+diving','https://source.unsplash.com/featured/900x600/?maldives+sunset+ocean+horizon'],
-    tags:['Overwater Villa','Diving','Pure Luxury'], budget:5, budgetLabel:'€€€€€ — True Luxury',
-    flight:{time:'~11h', cost:'CHF 700–1,500'},
+    img:'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=900&q=85&auto=format&fit=crop',
+    budget:5, budgetLabel:'€€€€€ — True Luxury', flight:{time:'~11h', cost:'CHF 700–1,500'},
     desc:'The postcard that became real. Crystal lagoons, overwater bungalows with glass floors above the reef, and complete disconnection from the rest of the world. This one you save up for.',
     time:'Nov – Apr (dry season)', vibe:'Total escape, total luxury', miss:'Bioluminescent beach at night',
     highlights:['Overwater villa with direct lagoon access and a glass floor','Bioluminescent plankton — the beach glows blue at night','Manta ray or whale shark snorkelling','Underwater restaurant dining','Sunrise from your private deck — complete silence, no one for miles'] },
 
   { id:'bahamas', name:'Bahamas', country:'The Bahamas', flag:'🇧🇸', type:'luxury', coords:[24.7136,-77.3963],
-    imgs:['https://images.unsplash.com/photo-1548574505-5e239809ee19?w=900&q=85&auto=format&fit=crop','https://source.unsplash.com/featured/900x600/?harbour+island+pink+sand+bahamas','https://source.unsplash.com/featured/900x600/?exuma+bahamas+crystal+turquoise'],
-    tags:['Pink Sand','Swimming Pigs','Caribbean'], budget:4, budgetLabel:'€€€€ — Very Expensive',
-    flight:{time:'~10h', cost:'CHF 600–1,200'},
+    img:'https://images.unsplash.com/photo-1548574505-5e239809ee19?w=900&q=85&auto=format&fit=crop',
+    budget:4, budgetLabel:'€€€€ — Very Expensive', flight:{time:'~10h', cost:'CHF 600–1,200'},
     desc:'The Atlantic at its most surreal. Harbour Island\'s genuinely pink sand, the swimming pigs of Exuma, and water so clear it doesn\'t look real. The Bahamas is a proper flex.',
     time:'Dec – Apr', vibe:'Postcard luxury', miss:'Harbour Island pink sand beach',
     highlights:['Harbour Island — the pink sand beach is actually pink','Swimming pigs at Big Major Cay, Exuma','Thunderball Grotto snorkelling (James Bond filmed here)','Dean\'s Blue Hole — world\'s second deepest blue hole','Exuma Cays Land and Sea Park — pristine, remote, wild'] },
 ];
 
-// STATE
-let saved   = JSON.parse(localStorage.getItem('tw-saved')  || '[]');
-let booked  = JSON.parse(localStorage.getItem('tw-booked') || '[]');
-let filter  = 'all';
-let view    = 'grid';
-let current = null;
-let imgIdx  = 0;
-let bookId  = null;
+let saved  = JSON.parse(localStorage.getItem('tw-saved')  || '[]');
+let booked = JSON.parse(localStorage.getItem('tw-booked') || '[]');
+let filter = 'all';
+let view   = 'grid';
+let bookId = null;
 let leafMap = null;
 let mmarkers = {};
 
@@ -391,15 +373,15 @@ function isSaved(id)    { return saved.includes(id); }
 
 function dots(n) {
   let h = '';
-  for (let i = 1; i <= 5; i++) h += `<span class="dot${i > n ? ' off':''}"></span>`;
+  for (let i = 1; i <= 5; i++) h += `<span class="dot${i > n ? ' off' : ''}"></span>`;
   return h;
 }
 
 function render() {
   const showReg = filter === 'all' || filter === 'regular';
   const showLux = filter === 'all' || filter === 'luxury';
-  document.getElementById('div-reg').classList.toggle('sec-hidden', !showReg);
-  document.getElementById('div-lux').classList.toggle('sec-hidden', !showLux);
+  document.getElementById('div-reg').classList.toggle('hidden', !showReg);
+  document.getElementById('div-lux').classList.toggle('hidden', !showLux);
   const rg = document.getElementById('grid-reg');
   const lg = document.getElementById('grid-lux');
   rg.innerHTML = ''; lg.innerHTML = '';
@@ -418,53 +400,41 @@ function mkCard(d) {
   const el = document.createElement('div');
   el.className = `card${bk ? ' booked' : ''}`;
   el.innerHTML = `
-    <img class="card-img" src="${d.imgs[0]}" alt="${d.name}" loading="lazy">
-    <span class="card-badge ${d.type}">${d.type === 'luxury' ? '✦ Luxury' : 'Explore'}</span>
-    <span class="booked-badge">✈ ${bk ? bk.month + ' ' + bk.year : ''}</span>
-    <div class="card-actions">
-      <button class="action-btn heart${sv?' on':''}" title="Save" onclick="toggleSave(event,'${d.id}')">${sv ? '♥' : '♡'}</button>
-      <button class="action-btn plane${bk?' on':''}" title="Book a date" onclick="openBook(event,'${d.id}')">✈</button>
+    <div class="card-photo">
+      <img src="${d.img}" alt="${d.name}" loading="lazy">
+      <div class="card-photo-overlay"></div>
+      ${d.type === 'luxury' ? '<span class="lux-badge">✦ Luxury</span>' : ''}
+      <div class="card-photo-text">
+        <div class="card-flag-country">${d.flag}&nbsp; ${d.country}</div>
+        <div class="card-name">${d.name}</div>
+      </div>
+      <div class="card-actions">
+        <button class="act heart${sv?' on':''}" title="Save" onclick="toggleSave(event,'${d.id}')">${sv ? '♥' : '♡'}</button>
+        <button class="act plane${bk?' on':''}" title="Book a date" onclick="openBook(event,'${d.id}')">✈</button>
+      </div>
     </div>
-    <div class="card-overlay">
-      <div class="card-country">${d.flag}&nbsp;${d.country}</div>
-      <div class="card-name">${d.name}</div>
+    <div class="booked-strip">${bk ? '✈ Going in ' + bk.month + ' ' + bk.year : ''}</div>
+    <div class="card-info">
       <div class="budget-dots">${dots(d.budget)}</div>
-      <div class="card-tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="card-time">${d.time}</div>
     </div>`;
-  el.addEventListener('click', e => { if (!e.target.closest('.action-btn')) openModal(d); });
+  el.addEventListener('click', e => { if (!e.target.closest('.act')) openModal(d); });
   return el;
 }
 
-// MODAL
 function openModal(d) {
-  current = d; imgIdx = 0;
-  const car = document.getElementById('carousel');
-  car.querySelectorAll('.c-img').forEach(el => el.remove());
-  d.imgs.forEach((src, i) => {
-    const img = document.createElement('img');
-    img.className = 'c-img' + (i === 0 ? ' on' : '');
-    img.src = src; img.alt = d.name;
-    img.onerror = () => img.style.display = 'none';
-    car.insertBefore(img, car.querySelector('.c-grad'));
-  });
-  const dotsEl = document.getElementById('c-dots');
-  dotsEl.innerHTML = d.imgs.map((_,i) => `<div class="c-dot${i===0?' on':''}" onclick="gotoImg(event,${i})"></div>`).join('');
-  const multi = d.imgs.length > 1;
-  car.querySelector('.prev').style.display = multi ? '' : 'none';
-  car.querySelector('.next').style.display = multi ? '' : 'none';
-  dotsEl.style.display = multi ? '' : 'none';
-
-  document.getElementById('m-flag').textContent    = d.flag;
-  document.getElementById('m-title').textContent   = d.name;
-  document.getElementById('m-country').textContent = d.country + (d.type==='luxury' ? ' · ✦ Luxury Dream' : '');
-  document.getElementById('m-desc').textContent    = d.desc;
-  document.getElementById('m-budget').innerHTML    = `<div class="budget-dots" style="margin-bottom:4px">${dots(d.budget)}</div><small>${d.budgetLabel}</small>`;
-  document.getElementById('m-time').textContent    = d.time;
-  document.getElementById('m-vibe').textContent    = d.vibe;
-  document.getElementById('m-miss').textContent    = d.miss;
-  document.getElementById('m-ftime').textContent   = d.flight.time;
-  document.getElementById('m-fcost').textContent   = d.flight.cost;
-  document.getElementById('m-hl').innerHTML        = d.highlights.map(h=>`<li>${h}</li>`).join('');
+  document.getElementById('m-img').src         = d.img;
+  document.getElementById('m-flag').textContent = d.flag;
+  document.getElementById('m-title').textContent = d.name;
+  document.getElementById('m-country').textContent = d.country + (d.type === 'luxury' ? ' · ✦ Luxury Dream' : '');
+  document.getElementById('m-desc').textContent  = d.desc;
+  document.getElementById('m-budget').innerHTML  = `<div class="budget-dots" style="margin-bottom:3px">${dots(d.budget)}</div><small>${d.budgetLabel}</small>`;
+  document.getElementById('m-time').textContent  = d.time;
+  document.getElementById('m-vibe').textContent  = d.vibe;
+  document.getElementById('m-miss').textContent  = d.miss;
+  document.getElementById('m-ftime').textContent = d.flight.time;
+  document.getElementById('m-fcost').textContent = d.flight.cost;
+  document.getElementById('m-hl').innerHTML      = d.highlights.map(h => `<li>${h}</li>`).join('');
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -472,41 +442,25 @@ function openModal(d) {
 function closeModal() {
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow = '';
-  current = null;
 }
 
 function maybeClose(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
 
-// CAROUSEL
-function gotoImg(e, idx) {
-  if (e) e.stopPropagation();
-  imgIdx = idx;
-  document.querySelectorAll('.c-img').forEach((el,i) => el.classList.toggle('on', i===idx));
-  document.querySelectorAll('.c-dot').forEach((el,i) => el.classList.toggle('on', i===idx));
-}
-
-function slide(e, dir) {
-  e.stopPropagation();
-  if (!current) return;
-  gotoImg(null, (imgIdx + dir + current.imgs.length) % current.imgs.length);
-}
-
-// SAVE / BOOK
 function toggleSave(e, id) {
   e.stopPropagation();
-  saved = saved.includes(id) ? saved.filter(x=>x!==id) : [...saved, id];
+  saved = saved.includes(id) ? saved.filter(x => x !== id) : [...saved, id];
   persist(); render();
 }
 
 function openBook(e, id) {
   e.stopPropagation();
-  const d = data.find(x=>x.id===id);
+  const d = data.find(x => x.id === id);
   bookId = id;
   document.getElementById('book-flag').textContent = d.flag;
   document.getElementById('book-name').textContent = d.name;
   const bk = getBooking(id);
   if (bk) { document.getElementById('book-month').value = bk.month; document.getElementById('book-year').value = bk.year; }
-  document.getElementById('book-overlay').classList.add('open');
+  document.getElementById('book-ov').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
@@ -520,41 +474,39 @@ function confirmBook() {
 }
 
 function closeBook() {
-  document.getElementById('book-overlay').classList.remove('open');
+  document.getElementById('book-ov').classList.remove('open');
   document.body.style.overflow = '';
   bookId = null;
 }
 
-function maybeCloseBook(e) { if (e.target === document.getElementById('book-overlay')) closeBook(); }
+function maybeCloseBook(e) { if (e.target === document.getElementById('book-ov')) closeBook(); }
 
-// VIEW / FILTER
 function setView(v) {
   view = v;
-  document.getElementById('btn-grid').classList.toggle('active', v==='grid');
-  document.getElementById('btn-map').classList.toggle('active',  v==='map');
-  document.getElementById('grid-sections').classList.toggle('hidden', v!=='grid');
-  document.getElementById('map-wrap').classList.toggle('visible', v==='map');
+  document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
+  document.getElementById('btn-map').classList.toggle('active',  v === 'map');
+  document.getElementById('grid-sections').classList.toggle('hidden', v !== 'grid');
+  document.getElementById('map-wrap').classList.toggle('visible', v === 'map');
   if (v === 'map') initMap();
 }
 
 function setFilter(f, btn) {
   filter = f;
-  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.btn-all, .btn-reg, .btn-lux').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   render();
 }
 
-// MAP
 function initMap() {
   if (leafMap) { refreshMarkers(); return; }
   leafMap = L.map('map', { center:[25,20], zoom:2 });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains:'abcd', maxZoom:19
   }).addTo(leafMap);
   setTimeout(() => {
     const a = document.querySelector('.leaflet-control-attribution');
-    if (a) a.style.cssText = 'background:rgba(0,0,0,.5);color:#555;font-size:9px;';
+    if (a) a.style.cssText = 'font-size:9px;opacity:.5;';
   }, 200);
   refreshMarkers();
 }
@@ -565,34 +517,25 @@ function refreshMarkers() {
   const visible = filter === 'all' ? data : data.filter(d => d.type === filter);
   visible.forEach(d => {
     const bk  = getBooking(d.id);
-    const cls = bk ? 'bkd' : d.type === 'luxury' ? 'lux' : 'reg';
-    const icon = L.divIcon({
-      html: `<div class="dest-marker ${cls}">${d.flag}</div>`,
-      className: '', iconSize:[40,40], iconAnchor:[20,20]
-    });
+    const cls = bk ? 'pin-bkd' : d.type === 'luxury' ? 'pin-lux' : 'pin-reg';
+    const icon = L.divIcon({ html:`<div class="pin ${cls}">${d.flag}</div>`, className:'', iconSize:[40,40], iconAnchor:[20,20] });
     const m = L.marker(d.coords, { icon }).addTo(leafMap);
     m.bindPopup(`
-      <div style="font-size:1.3rem;margin-bottom:4px">${d.flag}</div>
+      <div style="font-size:1.2rem;margin-bottom:5px">${d.flag}</div>
       <div style="font-weight:bold;margin-bottom:2px">${d.name}</div>
-      <div style="font-size:.7rem;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:${bk?'6px':'0'}">${d.country}</div>
-      ${bk ? `<div style="color:#3cb454;font-size:.75rem">✈ ${bk.month} ${bk.year}</div>` : ''}
-      <div style="margin-top:8px;font-size:.65rem;color:#666;text-transform:uppercase;letter-spacing:.05em">tap to explore →</div>
-    `, { maxWidth:180 });
+      <div style="font-size:.68rem;color:#888;text-transform:uppercase;letter-spacing:.08em">${d.country}</div>
+      ${bk ? `<div style="margin-top:6px;font-size:.72rem;color:#16a34a;font-family:system-ui">✈ ${bk.month} ${bk.year}</div>` : ''}
+    `, { maxWidth:160 });
     m.on('click', () => openModal(d));
     mmarkers[d.id] = m;
   });
 }
 
-// KEYBOARD
 document.addEventListener('keydown', e => {
-  const mo = document.getElementById('overlay').classList.contains('open');
-  const bo = document.getElementById('book-overlay').classList.contains('open');
-  if (mo) {
-    if (e.key === 'Escape') closeModal();
-    if (e.key === 'ArrowLeft'  && current) gotoImg(null, (imgIdx - 1 + current.imgs.length) % current.imgs.length);
-    if (e.key === 'ArrowRight' && current) gotoImg(null, (imgIdx + 1) % current.imgs.length);
+  if (e.key === 'Escape') {
+    closeModal();
+    closeBook();
   }
-  if (bo && e.key === 'Escape') closeBook();
 });
 
 render();
